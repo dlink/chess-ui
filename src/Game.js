@@ -38,7 +38,8 @@ class Board extends React.Component {
 	    }
 	}
 	this.state = {
-	    history: [{board: board}]
+	    history: [{board: board}],
+	    pieceSelected: null
 	}
     }
 
@@ -55,6 +56,9 @@ class Board extends React.Component {
 	    }
 	}
 	let square = board[x-1][y-1];
+	// alert(x + ':' + y + ', ' + square.name);
+
+	/* messing around with showing possible moves
 	if (square.name == 'pawn') {
 	    if (y == 2) {
 		board[x-1][y].isIndicated = true;
@@ -71,6 +75,18 @@ class Board extends React.Component {
 		board[x-2][y-3].isIndicated = true
 		board[x][y-3].isIndicated = true
 	    }
+	}
+	*/
+
+
+	if (square.value && !this.state.pieceSelected) {
+	    square.isIndicated = true;
+	    this.setState({pieceSelected: square});
+	} else if (this.state.pieceSelected) {
+	    square.value = this.state.pieceSelected.value;
+	    this.state.pieceSelected.value = null;
+	    this.setState({pieceSelected: null});
+	    // To Do. adjust board config
 	}
 
 	this.setState(
