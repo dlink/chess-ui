@@ -30,7 +30,9 @@ class Board extends React.Component {
 		    {key: key,
 		     x: x,
 		     y: y,
-		     value: value});
+		     //value: key
+		     value: getPiece(x, y)
+		    });
 	    }
 	}
 	this.state = {
@@ -43,7 +45,7 @@ class Board extends React.Component {
 	const history = this.state.history;
 	const current = history[history.length - 1];
 	const board = current.board.splice(0);
-	board[x-1][y-1].value = 'x';
+	board[x-1][y-1].value = '♛';
 
 	this.setState(
 	    {
@@ -71,7 +73,7 @@ class Board extends React.Component {
 
 	const history = this.state.history;
 	const current = history[history.length-1];
-	for (let y = 1; y <= BOARD_HEIGHT; y++) {
+	for (let y = BOARD_HEIGHT; y > 0; y--) {
 	    let squares = []
 	    for (let x = 1; x <= BOARD_WIDTH; x++) {
 		const square_rec = current.board[x-1][y-1];
@@ -106,6 +108,20 @@ class Square extends React.Component {
 		   <span className={className} />
 		</div>);
     }
+}
+
+function getPiece(x, y) {
+
+    let piece = null;
+    if ([1, 8].includes(y)) {
+	if      ([1,8].includes(x)) { piece = (y == 1) ? '♖' : '♜'; }
+	else if ([2,7].includes(x)) { piece = (y == 1) ? '♘' : '♞'; }
+	else if ([3,6].includes(x)) { piece = (y == 1) ? '♗' : '♝'; }
+	else if (x == 4)            { piece = (y == 1) ? '♕' : '♛'; }
+	else if (x == 5)            { piece = (y == 1) ? '♔' : '♚'; }
+    } else if ([2, 7].includes(y))  { piece = (y == 2) ? '♙' : '♟'; }
+
+    return piece;
 }
 
 export default Game;
