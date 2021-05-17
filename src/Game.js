@@ -24,14 +24,16 @@ class Board extends React.Component {
 	let value = null;
 	for (let x = 1; x <= BOARD_WIDTH; x++) {
 	    board.push([])
-	    for (let y = 1; y <= BOARD_HEIGHT; y++) {;
+	    for (let y = 1; y <= BOARD_HEIGHT; y++) {
 		let key = x + ':' + y;
+		const pieceInfo = getPiece(x, y)
 		board[board.length-1].push(
 		    {key: key,
 		     x: x,
 		     y: y,
-		     //value: key
-		     value: getPiece(x, y)
+		     name: pieceInfo.name,
+		     value: pieceInfo.piece,
+		     isIndicated: false
 		    });
 	    }
 	}
@@ -45,7 +47,31 @@ class Board extends React.Component {
 	const history = this.state.history;
 	const current = history[history.length - 1];
 	const board = current.board.splice(0);
-	board[x-1][y-1].value = '♛';
+	//board[x-1][y-1].value = '♛';
+
+	for (let x = 1; x <= BOARD_WIDTH; x++) {
+	    for (let y = 1; y <= BOARD_HEIGHT; y++) {
+		board[x-1][y-1].isIndicated = false;
+	    }
+	}
+	let square = board[x-1][y-1];
+	if (square.name == 'pawn') {
+	    if (y == 2) {
+		board[x-1][y].isIndicated = true;
+		board[x-1][y+1].isIndicated = true;
+	    } else {
+		board[x-1][y-2].isIndicated = true;
+		board[x-1][y-3].isIndicated = true;
+	    }
+	} else if (square.name == 'knight') {
+	    if (y == 1) {
+		board[x-2][y+1].isIndicated = true
+		board[x][y+1].isIndicated = true
+	    } else {
+		board[x-2][y-3].isIndicated = true
+		board[x][y-3].isIndicated = true
+	    }
+	}
 
 	this.setState(
 	    {
@@ -62,6 +88,7 @@ class Board extends React.Component {
 	    <Square
 	    key={square_rec.key}
 	    value={square_rec.value}
+	    isIndicated={square_rec.isIndicated}
 	    onClick={() => this.handleClick(x, y)}
 		/>)
     }
@@ -96,8 +123,7 @@ class Board extends React.Component {
 class Square extends React.Component {
 
     render() {
-	//const className = this.state.isIndicated ? 'dot active' : 'dot'
-	const className = 'dot';
+	const dotClassName = this.props.isIndicated ? 'dot active' : 'dot'
 	// const key = this.props.x + ':' + this.props.y;
 	return (
 		<div
@@ -105,23 +131,30 @@ class Square extends React.Component {
 		   onClick={this.props.onClick}
 		>
 		   {this.props.value}
-		   <span className={className} />
+		   <span className={dotClassName} />
 		</div>);
     }
 }
 
 function getPiece(x, y) {
 
+    let name = null;
     let piece = null;
     if ([1, 8].includes(y)) {
-	if      ([1,8].includes(x)) { piece = (y == 1) ? '♖' : '♜'; }
-	else if ([2,7].includes(x)) { piece = (y == 1) ? '♘' : '♞'; }
-	else if ([3,6].includes(x)) { piece = (y == 1) ? '♗' : '♝'; }
-	else if (x == 4)            { piece = (y == 1) ? '♕' : '♛'; }
-	else if (x == 5)            { piece = (y == 1) ? '♔' : '♚'; }
-    } else if ([2, 7].includes(y))  { piece = (y == 2) ? '♙' : '♟'; }
+	if      ([1,8].includes(x)) { piece = (y == 1) ? '♖' : '♜';
+				      name = 'rook' }
+	else if ([2,7].includes(x)) { piece = (y == 1) ? '♘' : '♞';
+				      name = 'knight' }
+	else if ([3,6].includes(x)) { piece = (y == 1) ? '♗' : '♝';
+				      name = 'bishop' }
+	else if (x == 4)            { piece = (y == 1) ? '♕' : '♛';
+				      name = 'queen' }
+	else if (x == 5)            { piece = (y == 1) ? '♔' : '♚';
+				      name = 'king' }
+    } else if ([2, 7].includes(y))  { piece = (y == 2) ? '♙' : '♟';
+				      name='pawn' }
 
-    return piece;
+    return {name: name, piece: piece}
 }
 
 export default Game;
