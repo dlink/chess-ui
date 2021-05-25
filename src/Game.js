@@ -21,12 +21,13 @@ class Board extends React.Component {
 
 	// inital board
 	let board = [];
-	let value = null;
+	//let value = null;
 	for (let x = 1; x <= BOARD_WIDTH; x++) {
 	    board.push([])
 	    for (let y = 1; y <= BOARD_HEIGHT; y++) {
 		let key = x + ':' + y;
 		const pieceInfo = getPiece(x, y)
+		//const pieceInfo = {name: null, piece: null}
 		board[board.length-1].push(
 		    {key: key,
 		     x: x,
@@ -37,6 +38,15 @@ class Board extends React.Component {
 		    });
 	    }
 	}
+	/* not yet working
+	fetch('/board')
+	    .then(res => res.json())
+	    .then(data => {
+		for (const piece of data.pieces) {
+		    board[0][0].value = piece.value;
+		}
+	    });*/
+
 	this.state = {
 	    history: [{board: board}],
 	    pieceSelected: null
@@ -111,7 +121,7 @@ class Board extends React.Component {
 
     render() {
 	let rows = []
-	let value = null;
+	//let value = null;
 	let isIndicated = null;
 
 	const history = this.state.history;
@@ -157,17 +167,17 @@ function getPiece(x, y) {
     let name = null;
     let piece = null;
     if ([1, 8].includes(y)) {
-	if      ([1,8].includes(x)) { piece = (y == 1) ? '♖' : '♜';
+	if      ([1,8].includes(x)) { piece = (y === 1) ? '♖' : '♜';
 				      name = 'rook' }
-	else if ([2,7].includes(x)) { piece = (y == 1) ? '♘' : '♞';
+	else if ([2,7].includes(x)) { piece = (y === 1) ? '♘' : '♞';
 				      name = 'knight' }
-	else if ([3,6].includes(x)) { piece = (y == 1) ? '♗' : '♝';
+	else if ([3,6].includes(x)) { piece = (y === 1) ? '♗' : '♝';
 				      name = 'bishop' }
-	else if (x == 4)            { piece = (y == 1) ? '♕' : '♛';
+	else if (x === 4)           { piece = (y === 1) ? '♕' : '♛';
 				      name = 'queen' }
-	else if (x == 5)            { piece = (y == 1) ? '♔' : '♚';
+	else if (x === 5)           { piece = (y === 1) ? '♔' : '♚';
 				      name = 'king' }
-    } else if ([2, 7].includes(y))  { piece = (y == 2) ? '♙' : '♟';
+    } else if ([2, 7].includes(y))  { piece = (y === 2) ? '♙' : '♟';
 				      name='pawn' }
 
     return {name: name, piece: piece}
