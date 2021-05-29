@@ -26,8 +26,8 @@ class Board extends React.Component {
 	    board.push([])
 	    for (let y = 1; y <= BOARD_HEIGHT; y++) {
 		let key = x + ':' + y;
-		const pieceInfo = getPiece(x, y)
-		//const pieceInfo = {name: null, piece: null}
+		//const pieceInfo = getPiece(x, y)
+		const pieceInfo = {name: null, piece: null}
 		board[board.length-1].push(
 		    {key: key,
 		     x: x,
@@ -38,19 +38,39 @@ class Board extends React.Component {
 		    });
 	    }
 	}
-	/* not yet working
-	fetch('/board')
-	    .then(res => res.json())
-	    .then(data => {
-		for (const piece of data.pieces) {
-		    board[0][0].value = piece.value;
-		}
-	    });*/
-
 	this.state = {
 	    history: [{board: board}],
 	    pieceSelected: null
 	}
+    }
+
+    componentDidMount() {
+	this.setupBoard();
+    }
+
+    setupBoard() {
+	fetch('/board')
+	    .then(res => res.json())
+	    .then(data => {
+		console.log(2);
+		const history = this.state.history;
+		const current = history[history.length - 1];
+		const board = current.board.splice(0);
+		console.log(data);
+		console.log(board[0][0]);
+		board[0][0].value = data.pieces[0].char
+		for (const piece of data.pieces) {
+		    console.log(piece.char);
+		    if (piece.glyph) {
+			board[piece.x][piece.y].value = piece.glyph
+		    }
+		}
+		this.setState(
+		    {
+			history: history.concat([{board: board}])
+		    }
+		);
+	    });
     }
 
     handleClick(x, y) {
