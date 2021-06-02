@@ -52,15 +52,10 @@ class Board extends React.Component {
 	fetch('/board')
 	    .then(res => res.json())
 	    .then(data => {
-		console.log(2);
 		const history = this.state.history;
 		const current = history[history.length - 1];
 		const board = current.board.splice(0);
-		console.log(data);
-		console.log(board[0][0]);
-		board[0][0].value = data.pieces[0].char
 		for (const piece of data.pieces) {
-		    console.log(piece.char);
 		    if (piece.glyph) {
 			board[piece.x][piece.y].value = piece.glyph
 		    }
@@ -74,11 +69,9 @@ class Board extends React.Component {
     }
 
     handleClick(x, y) {
-	//alert(x + ":" + y);
 	const history = this.state.history;
 	const current = history[history.length - 1];
 	const board = current.board.splice(0);
-	//board[x-1][y-1].value = '♛';
 
 	for (let x = 1; x <= BOARD_WIDTH; x++) {
 	    for (let y = 1; y <= BOARD_HEIGHT; y++) {
@@ -86,7 +79,6 @@ class Board extends React.Component {
 	    }
 	}
 	let square = board[x-1][y-1];
-	// alert(x + ':' + y + ', ' + square.name);
 
 	/* messing around with showing possible moves
 	if (square.name == 'pawn') {
@@ -108,23 +100,60 @@ class Board extends React.Component {
 	}
 	*/
 
-
+	var x1, y1, x2, y2;
+	var move = '';
 	if (square.value && !this.state.pieceSelected) {
 	    square.isIndicated = true;
 	    this.setState({pieceSelected: square});
 	} else if (this.state.pieceSelected) {
+	    var fromSquare = this.state.pieceSelected
+	    x1 = fromSquare.x;
+	    y1 = fromSquare.y;
+	    x2 = square.x;
+	    y2 = square.y;
+	    move = x1+','+y1+','+x2+','+y2
 	    square.value = this.state.pieceSelected.value;
 	    this.state.pieceSelected.value = null;
 	    this.setState({pieceSelected: null});
-	    // To Do. adjust board config
 	}
-
 	this.setState(
 	    {
 		history: history.concat([{board: board}])
-	    }
-	);
+	    });
 
+	if (move) {
+	    this.makeMoveAndGetResponse(move);
+	}
+    }
+
+    makeMoveAndGetResponse(move) {
+	console.log('makemove and get response'+move);
+	fetch('/move/' + move)
+	    .then(res => res.json())
+	    .then(data => {
+		const history = this.state.history;
+		const current = history[history.length - 1];
+		const board = current.board.splice(0);
+
+		// clear board
+		for (let x = 1; x <= BOARD_WIDTH; x++) {
+		    for (let y = 1; y <= BOARD_HEIGHT; y++) {
+			board[x-1][y-1].value = null;
+		    }
+		}
+
+		// set pieces
+		for (const piece of data.pieces) {
+		    if (piece.glyph) {
+			board[piece.x][piece.y].value = piece.glyph;
+		    }
+		}
+		this.setState(
+		    {
+			history: history.concat([{board: board}])
+		    }
+		);
+	    });
     }
 
     renderSquare(square_rec) {
