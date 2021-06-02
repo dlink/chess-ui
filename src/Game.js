@@ -34,6 +34,7 @@ class Board extends React.Component {
 		     y: y,
 		     name: pieceInfo.name,
 		     value: pieceInfo.piece,
+		     color: null,
 		     isIndicated: false
 		    });
 	    }
@@ -57,7 +58,8 @@ class Board extends React.Component {
 		const board = current.board.splice(0);
 		for (const piece of data.pieces) {
 		    if (piece.glyph) {
-			board[piece.x][piece.y].value = piece.glyph
+			board[piece.x][piece.y].value = piece.glyph;
+			board[piece.x][piece.y].color = piece.color;
 		    }
 		}
 		this.setState(
@@ -102,10 +104,15 @@ class Board extends React.Component {
 
 	var x1, y1, x2, y2;
 	var move = '';
-	if (square.value && !this.state.pieceSelected) {
-	    square.isIndicated = true;
-	    this.setState({pieceSelected: square});
-	} else if (this.state.pieceSelected) {
+	console.log(square);
+	if (!this.state.pieceSelected) {
+	    if (square.color == 'w') {
+		square.isIndicated = true;
+		this.setState({pieceSelected: square});
+	    }
+	} else if (square.color == 'w') {
+	    this.setState({pieceSelected: null});
+	} else { /*if (this.state.pieceSelected) { */
 	    var fromSquare = this.state.pieceSelected
 	    x1 = fromSquare.x;
 	    y1 = fromSquare.y;
@@ -146,6 +153,7 @@ class Board extends React.Component {
 		for (const piece of data.pieces) {
 		    if (piece.position != 'x' && piece.glyph) {
 			board[piece.x][piece.y].value = piece.glyph;
+			board[piece.x][piece.y].color = piece.color;
 		    }
 		}
 		this.setState(
