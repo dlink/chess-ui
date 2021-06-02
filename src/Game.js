@@ -144,7 +144,7 @@ class Board extends React.Component {
 
 		// set pieces
 		for (const piece of data.pieces) {
-		    if (piece.glyph) {
+		    if (piece.position != 'x' && piece.glyph) {
 			board[piece.x][piece.y].value = piece.glyph;
 		    }
 		}
