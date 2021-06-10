@@ -106,21 +106,20 @@ class Board extends React.Component {
 	var move = '';
 	console.log(square);
 	if (!this.state.pieceSelected) {
-	    if (square.color == 'w') {
+	    if (square.color === 'w') {
 		square.isIndicated = true;
 		this.setState({pieceSelected: square});
 	    }
-	} else if (square.color == 'w') {
+	} else if (square.color === 'w') {
 	    this.setState({pieceSelected: null});
-	} else { /*if (this.state.pieceSelected) { */
+	} else {
 	    var fromSquare = this.state.pieceSelected
 	    x1 = fromSquare.x;
 	    y1 = fromSquare.y;
 	    x2 = square.x;
 	    y2 = square.y;
 	    move = x1+','+y1+','+x2+','+y2
-	    square.value = this.state.pieceSelected.value;
-	    this.state.pieceSelected.value = null;
+	    //square.value = this.state.pieceSelected.value;
 	    this.setState({pieceSelected: null});
 	}
 	this.setState(
@@ -138,6 +137,7 @@ class Board extends React.Component {
 	fetch('/move/' + move)
 	    .then(res => res.json())
 	    .then(data => {
+		console.log(data);
 		const history = this.state.history;
 		const current = history[history.length - 1];
 		const board = current.board.splice(0);
@@ -151,7 +151,7 @@ class Board extends React.Component {
 
 		// set pieces
 		for (const piece of data.pieces) {
-		    if (piece.position != 'x' && piece.glyph) {
+		    if (piece.position !== 'x' && piece.glyph) {
 			board[piece.x][piece.y].value = piece.glyph;
 			board[piece.x][piece.y].color = piece.color;
 		    }
@@ -169,7 +169,7 @@ class Board extends React.Component {
 	const y = square_rec.y;
 	return (
 	    <Square
-	    key={square_rec.key}
+	    //key={square_rec.key}
 	    value={square_rec.value}
 	    isIndicated={square_rec.isIndicated}
 	    onClick={() => this.handleClick(x, y)}
@@ -179,7 +179,7 @@ class Board extends React.Component {
     render() {
 	let rows = []
 	//let value = null;
-	let isIndicated = null;
+	//let isIndicated = null;
 
 	const history = this.state.history;
 	const current = history[history.length-1];
@@ -197,7 +197,7 @@ class Board extends React.Component {
 	return (
 	    <div className='board'>
 	    {rows.map((value, index) => {
-		return <div className='board-row'>{value}</div>
+		return <div key={index} className='board-row'>{value}</div>
 	    })}
 	    </div>);
     }
@@ -210,6 +210,7 @@ class Square extends React.Component {
 	// const key = this.props.x + ':' + this.props.y;
 	return (
 		<div
+	           // key={key}
 		   className='square' // square-indicator'
 		   onClick={this.props.onClick}
 		>
@@ -219,8 +220,9 @@ class Square extends React.Component {
     }
 }
 
+/* used initially before fetch to chess server implemented */
+/*
 function getPiece(x, y) {
-
     let name = null;
     let piece = null;
     if ([1, 8].includes(y)) {
@@ -239,5 +241,6 @@ function getPiece(x, y) {
 
     return {name: name, piece: piece}
 }
+*/
 
 export default Game;
